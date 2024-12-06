@@ -53,7 +53,7 @@ const Navbar = () => {
 
       {/* Footer */}
       <div className="h-16 flex items-center justify-center bg-[#24cdba]">
-        <button className="text-sm">
+        <button className="text-sm" onClick={()=>console.log("handle logout")}>
           <i className="fas fa-sign-out-alt mr-2"></i>
           Logout
         </button>

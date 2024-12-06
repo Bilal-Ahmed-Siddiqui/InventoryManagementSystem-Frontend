@@ -1,6 +1,7 @@
 import React from 'react'
-
-const Order = ({ order, onDelete, onUpdate }) => {
+import { useNavigate } from 'react-router-dom';
+const Order = ({ order, setUpdateModal, setDeleteModal }) => {
+  const navigator = useNavigate()
   const { id, totalPrice, products } = order;
   const firstProduct = products[0];
   return (
@@ -19,14 +20,14 @@ const Order = ({ order, onDelete, onUpdate }) => {
       {/* Action Buttons */}
       <div className="flex flex-col space-y-2 mt-4 sm:mt-0">
         <button
-          onClick={() => onUpdate(id)}
-          className="py-1 px-4 rounded-md border-2 border-[#24cdba] text-[#24cdba] hover:bg-[#24cdba] hover:text-white focus:outline-none focus:ring-2 focus:ring-[#24cdba]"
+          onClick={() =>  navigator("/orders/update/:id")}
+          className="py-1 px-4 rounded-md border-2 border-[#24cdba] text-[#24cdba] hover:bg-[#24cdba] hover:text-white "
         >
           Update
         </button>
         <button
-          onClick={() => onDelete(id)}
-          className="py-1 px-4 rounded-md border-2 border-[#24cdba] text-[#24cdba] hover:bg-[#24cdba] hover:text-white focus:outline-none focus:ring-2 focus:ring-[#24cdba]"
+          onClick={() => setDeleteModal(true)}
+          className="py-1 px-4 rounded-md border-2 border-[#24cdba] text-[#24cdba] hover:bg-[#24cdba] hover:text-white "
         >
           Delete
         </button>
