@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import Navbar from "../components/Navbar"
 import { useNavigate } from 'react-router-dom';
-
+import axios from 'axios';
 
 const CreateUser = () => {
     const navigator = useNavigate()
@@ -24,16 +24,28 @@ const CreateUser = () => {
         }));
     };
 
-    // Handle form submission
-    const handleSubmit = (e) => {
+    const handleCreateUser = (e) => {
         e.preventDefault();
-        // Here you can handle the form submission (e.g., sending data to a server)
-        console.log('Form submitted', formData);
 
+        axios
+        .post("http://localhost:300/user/signup", formData,{
+          headers: {
+            token: localStorage.getItem("token"),
+          },
+        })
+        .then((response) => {
+            console.log("user added successfully", response);
+            navigator("/users")
+        })
+        .catch((err) => {
+          console.log("some error occured", err);
+        });
 
-
+        // Optionally, clear the form after submission
+        setFormData({
+            name: '',
+        });
     };
-
     return (
         <div className="flex w-full">
             <Navbar />
@@ -52,7 +64,7 @@ const CreateUser = () => {
                     <div className="max-w-full min-h-screen flex justify-center items-start bg-gray-100 px-8 py-12">
                         <div className="w-full max-w-full p-8 bg-white shadow-lg rounded-md">
                             <h2 className="text-3xl font-semibold text-left mb-12">Add a New User</h2>
-                            <form onSubmit={handleSubmit}>
+                            <form onSubmit={handleCreateUser}>
                                 {/* Username */}
                                 <div className="mb-8">
                                     <label htmlFor="username" className="block text-sm font-medium text-gray-700">

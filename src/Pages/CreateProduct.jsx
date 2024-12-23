@@ -1,26 +1,49 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Navbar from "../components/Navbar";
 import { useNavigate } from 'react-router-dom';
-
+import axios from 'axios';
 // Sample category data for the dropdown
-const categories = [
-    { id: 1, name: 'Category 1' },
-    { id: 2, name: 'Category 2' },
-];
+// const categories = [
+//     { id: 1, name: 'Category 1' },
+//     { id: 2, name: 'Category 2' },
+// ];
 
 const CreateProduct = () => {
     const navigator = useNavigate();
+    const [categories, setCategories] = useState([])
     const [formData, setFormData] = useState({
         name: '',
         price: '',
         quantity: 0,
-        categoryId: '',
-        image: null,
+        category: '',
         inStock: false,
+        image: null,
     });
+
+    const getAllCategories= async()=>{
+        axios
+        .get("http://localhost:300/category/getall",
+        {
+            headers: {
+                "token": localStorage.getItem("token")
+            }
+        }
+        )
+        .then(response => {
+            setCategories(response.data);
+        })
+        .catch(err => {
+          console.log("some error occured", err);
+        });
+    }
+
+    useEffect(() => {
+        getAllCategories();
+    }, [])
 
     const handleChange = (e) => {
         const { name, value } = e.target;
+        console.log(value)
         setFormData((prevState) => ({
             ...prevState,
             [name]: value,
@@ -45,9 +68,36 @@ const CreateProduct = () => {
 
     const handleSubmit = (e) => {
         e.preventDefault();
-        console.log('Product added:', formData);
+        let payLoad = new FormData();
+        
+        // Append the jsonData as a string
+        payLoad.append('jsonData', JSON.stringify({
+            Name: formData.name,
+            Price: formData.price,
+            Quantity: formData.quantity,
+            Category: formData.category,
+            inStock: formData.inStock,
+        }));
+    
+        // Append the product image
+        payLoad.append('productPicture', formData.image);
+    
+        axios
+            .post("http://localhost:300/product/create", payLoad, {
+                headers: {
+                    token: localStorage.getItem("token"),
+                    'Content-Type': 'multipart/form-data',
+                },
+            })
+            .then((response) => {
+                console.log("Product added successfully", response);
+                navigator("/products");
+            })
+            .catch((err) => {
+                console.log("Some error occurred", err);
+            });
     };
-
+    
     return (
         <div className="flex w-full">
             <Navbar />
@@ -85,20 +135,20 @@ const CreateProduct = () => {
                                         />
                                     </div>
                                     <div className="w-1/2">
-                                        <label htmlFor="categoryId" className="block text-sm font-medium text-gray-700">
+                                        <label htmlFor="category" className="block text-sm font-medium text-gray-700">
                                             Category
                                         </label>
                                         <select
-                                            id="categoryId"
-                                            name="categoryId"
-                                            value={formData.categoryId}
+                                            id="category"
+                                            name="category"
+                                            value={formData.category}
                                             onChange={handleChange}
                                             required
                                             className="mt-2 p-3 w-full border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                                         >
                                             <option value="">Select a category</option>
                                             {categories.map((category) => (
-                                                <option key={category.id} value={category.id}>
+                                                <option key={category._id} value={category._id}>
                                                     {category.name}
                                                 </option>
                                             ))}
@@ -153,10 +203,10 @@ const CreateProduct = () => {
                                     />
                                 </div>
 
-                                {/* Product Image Upload */}
+                                {/* Product image Upload */}
                                 <div className="mb-8">
                                     <label htmlFor="image" className="block text-sm font-medium text-gray-700">
-                                        Product Image
+                                        Product image
                                     </label>
                                     <input
                                         type="file"

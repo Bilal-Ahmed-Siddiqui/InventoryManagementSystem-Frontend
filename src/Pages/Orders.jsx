@@ -1,35 +1,57 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import Navbar from "../components/Navbar"
 import Order from '../components/Order';
 import DeleteModal from '../components/DeleteModal'
 import { useNavigate } from 'react-router-dom';
+import axios from 'axios';
 
 const Orders = () => {
     const [deleteModal, setDeleteModal] = useState(false)
     const [updateState, setUpdateState] = useState(false)
-    const orders = [
-        {
-            id: "ORD123",
-            totalPrice: 59.99,
-            products: [
-                { name: "Product A", description: "A great product." },
-                { name: "Product B", description: "Another great product." },
-            ],
-        },
-        {
-            id: "ORD124",
-            totalPrice: 99.99,
-            products: [
-                { name: "Product C", description: "A fantastic item." },
-            ],
-        },
-        // More orders...
-    ];
+    const [orders, setOrders] = useState([])
+
+    // const orders = [
+    //     {
+    //         id: "ORD123",
+    //         totalPrice: 59.99,
+    //         products: [
+    //             { name: "Product A", description: "A great product." },
+    //             { name: "Product B", description: "Another great product." },
+    //         ],
+    //     },
+    //     {
+    //         id: "ORD124",
+    //         totalPrice: 99.99,
+    //         products: [
+    //             { name: "Product C", description: "A fantastic item." },
+    //         ],
+    //     },
+    //     // More orders...
+    // ];
     const deleteMethod = () => {
         console.log("order delete method")
     }
     const navigator = useNavigate()
+    const getAllOrders= async()=>{
+        axios
+        .get("http://localhost:300/order/getall",
+        {
+            headers: {
+                "token": localStorage.getItem("token")
+            }
+        }
+        )
+        .then(response => {
+            setOrders(response.data);
+        })
+        .catch(err => {
+          console.log("some error occured", err);
+        });
+    }
 
+    useEffect(() => {
+        getAllOrders();
+    }, [])
     return (
         <>
             <div className="flex w-full">

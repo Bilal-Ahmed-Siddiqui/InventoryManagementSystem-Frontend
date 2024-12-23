@@ -1,7 +1,15 @@
 import React from 'react'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 
 const Navbar = () => {
+  const navigator = useNavigate();
+
+  const handleLogout=()=>{
+    if(localStorage.getItem("token")){
+      localStorage.removeItem("token");
+    }
+    navigator("/login");
+  }
   return (
     <div className="fixed h-screen w-48 bg-[#3df8e2] flex flex-col overflow-hidden">
       {/* Logo/Brand */}
@@ -53,7 +61,7 @@ const Navbar = () => {
 
       {/* Footer */}
       <div className="h-16 flex items-center justify-center bg-[#24cdba]">
-        <button className="text-sm" onClick={()=>console.log("handle logout")}>
+        <button className="text-sm" onClick={handleLogout}>
           <i className="fas fa-sign-out-alt mr-2"></i>
           Logout
         </button>

@@ -1,12 +1,12 @@
 import React, {useState} from 'react'
 import Navbar from "../components/Navbar"
 import { useNavigate } from 'react-router-dom';
-
+import axios from 'axios';
 
 const CreateCategory = () => {
     const navigator = useNavigate()
     const [formData, setFormData] = useState({
-        categoryName: '',
+        name: '',
     });
 
     const handleChange = (e) => {
@@ -17,15 +17,28 @@ const CreateCategory = () => {
         });
     };
 
-    const handleSubmit = (e) => {
+    const handleCreateCategory = (e) => {
         e.preventDefault();
 
         // Perform the action to add the category, e.g., call an API or update state
-        console.log('Category Added:', formData.categoryName);
+        // console.log('Category Added:', formData.categoryName);
+        axios
+        .post("http://localhost:300/category/create", formData,{
+          headers: {
+            token: localStorage.getItem("token"),
+          },
+        })
+        .then((response) => {
+            console.log("Category added successfully", response);
+            navigator("/categories")
+        })
+        .catch((err) => {
+          console.log("some error occured", err);
+        });
 
         // Optionally, clear the form after submission
         setFormData({
-            categoryName: '',
+            name: '',
         });
     };
 
@@ -47,17 +60,17 @@ const CreateCategory = () => {
                     <div className="max-w-full min-h-screen flex justify-center items-start bg-gray-100 px-8 py-12">
                         <div className="w-full max-w-full p-8 bg-white shadow-lg rounded-md">
                             <h2 className="text-3xl font-semibold text-left mb-12">Add a New Category</h2>
-                            <form onSubmit={handleSubmit}>
+                            <form onSubmit={handleCreateCategory}>
                                 {/* Category Name */}
                                 <div className="mb-8">
-                                    <label htmlFor="categoryName" className="block text-sm font-medium text-gray-700">
+                                    <label htmlFor="name" className="block text-sm font-medium text-gray-700">
                                         Category Name
                                     </label>
                                     <input
                                         type="text"
-                                        id="categoryName"
-                                        name="categoryName"
-                                        value={formData.categoryName}
+                                        id="name"
+                                        name="name"
+                                        value={formData.name}
                                         onChange={handleChange}
                                         required
                                         className="mt-2 p-3 w-full border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
